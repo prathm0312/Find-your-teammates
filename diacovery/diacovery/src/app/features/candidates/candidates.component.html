@@ -1,0 +1,71 @@
+<div class="search-header">
+    <div class="container header-inner">
+        <h1 *ngIf="searchQuery">Results for "<span>{{ searchQuery }}</span>"</h1>
+        <h1 *ngIf="!searchQuery && selectedCategoryId">Explore <span>{{ selectedCategoryId | titlecase }}</span></h1>
+        <h1 *ngIf="!searchQuery && !selectedCategoryId">Find the best <span>freelancers</span></h1>
+    </div>
+</div>
+
+<div class="container listing-content">
+    <div class="sidebar">
+        <div class="filter-group">
+            <h3>Categories</h3>
+            <ul>
+                <li [class.active]="!selectedCategoryId" [routerLink]="['/candidates']"
+                    [queryParams]="{search: searchQuery}">All Categories</li>
+                <li *ngFor="let cat of categories" [class.active]="selectedCategoryId === cat.id"
+                    [routerLink]="['/candidates']" [queryParams]="{category: cat.id, search: searchQuery}">
+                    {{ cat.title }}
+                </li>
+            </ul>
+        </div>
+
+        <div class="filter-group">
+            <h3>Experience Level</h3>
+            <div class="filter-item"><input type="checkbox"> 1-3 years</div>
+            <div class="filter-item"><input type="checkbox"> 3-5 years</div>
+            <div class="filter-item"><input type="checkbox"> 5+ years</div>
+        </div>
+
+        <div class="filter-group">
+            <h3>Location</h3>
+            <div class="filter-item"><input type="checkbox"> Online</div>
+            <div class="filter-item"><input type="checkbox"> On-site</div>
+        </div>
+    </div>
+
+    <div class="main-listing">
+        <div class="listing-toolbar">
+            <span class="results-count">{{ totalElements }} services available</span>
+            <div class="sort-box">
+                <label>Sort by:</label>
+                <select [(ngModel)]="sortBy" (change)="onSortChange()">
+                    <option value="rating">Top Rated</option>
+                    <option value="experience">Most Experienced</option>
+                    <option value="price">Best Price</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="candidates-grid" *ngIf="candidates.length > 0">
+            <app-candidate-card *ngFor="let cand of candidates" [candidate]="cand"></app-candidate-card>
+        </div>
+
+        <div class="no-results" *ngIf="candidates.length === 0">
+            <lucide-icon name="search-x" [size]="80" class="no-results-icon"></lucide-icon>
+            <h2>No results found</h2>
+            <p>Try adjusting your search filters or check your spelling.</p>
+        </div>
+
+        <div class="pagination" *ngIf="totalElements > pageSize">
+            <button class="page-btn" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">
+                Prev
+            </button>
+            <span class="page-info">Page {{ currentPage + 1 }} of {{ Math.ceil(totalElements / pageSize) }}</span>
+            <button class="page-btn" [disabled]="(currentPage + 1) * pageSize >= totalElements"
+                (click)="onPageChange(currentPage + 1)">
+                Next
+            </button>
+        </div>
+    </div>
+</div>
